@@ -1,0 +1,94 @@
+{% set version = '1.0.2' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-smm
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/SMM_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/SMM/SMM_{{ version }}.tar.gz
+  sha256: 8db2241e2f9d5a24050141e2c3a0d253bceb730fca072196d9ef5bd6b43e2cbc
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+  # no skip
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: utils
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+    - r-discreteweibull
+    - r-seqinr
+
+  run:
+    - r-base
+    - r-discreteweibull
+    - r-seqinr
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('SMM')"           # [not win]
+    - "\"%R%\" -e \"library('SMM')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://CRAN.R-project.org/package=SMM
+  license: GPL-3
+  summary: 'Performs parametric and non-parametric estimation and simulation for multi-state
+    discrete-time semi-Markov processes. For the parametric estimation, several discrete
+    distributions are considered for the sojourn times: Uniform, Geometric, Poisson,
+    Discrete Weibull and Negative Binomial. The non-parametric estimation concerns the
+    sojourn time distributions, where no assumptions are done on the shape of distributions.
+    Moreover, the estimation can be done on the basis of one or several sample paths,
+    with or without censoring at the beginning or/and at the end of the sample paths.
+    The implemented methods are described in Barbu, V.S., Limnios, N. (2008) <doi:10.1007/978-0-387-73173-5>,
+    Barbu, V.S., Limnios, N. (2008) <doi:10.1080/10485250701261913> and Trevezas, S.,
+    Limnios, N. (2011) <doi:10.1080/10485252.2011.555543>. Estimation and simulation
+    of discrete-time k-th order Markov chains are also considered.'
+
+  license_family: GPL3
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+# The original CRAN metadata for this package was:
+
+# Package: SMM
+# Type: Package
+# Title: Simulation and Estimation of Multi-State Discrete-Time Semi-Markov and Markov Models
+# Version: 1.0.2
+# Date: 2020-01-24
+# Depends: seqinr, DiscreteWeibull
+# Author: Vlad Stefan Barbu, Caroline Berard, Dominique Cellier, Mathilde Sautreuil and Nicolas Vergne
+# Maintainer: Nicolas Vergne <nicolas.vergne@univ-rouen.fr>
+# Description: Performs parametric and non-parametric estimation and simulation for multi-state discrete-time semi-Markov processes. For the parametric estimation, several discrete distributions are considered for the sojourn times: Uniform, Geometric, Poisson, Discrete Weibull and Negative Binomial. The non-parametric estimation concerns the sojourn time distributions, where no assumptions are done on the shape of distributions. Moreover, the estimation can be done on the basis of one or several sample paths, with or without censoring at the beginning or/and at the end of the sample paths. The implemented methods are described in Barbu, V.S., Limnios, N. (2008) <doi:10.1007/978-0-387-73173-5>, Barbu, V.S., Limnios, N. (2008) <doi:10.1080/10485250701261913> and Trevezas, S., Limnios, N. (2011) <doi:10.1080/10485252.2011.555543>. Estimation and simulation of discrete-time k-th order Markov chains are also considered.
+# License: GPL
+# VignetteBuilder: utils
+# Suggests: utils
+# NeedsCompilation: no
+# Packaged: 2020-01-31 12:02:17 UTC; vergnnic
+# Repository: CRAN
+# Date/Publication: 2020-01-31 13:30:02 UTC
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml
